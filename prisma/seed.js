@@ -1,7 +1,11 @@
-import prisma from "../src/config/prisma";
-
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const prisma_1 = __importDefault(require("../src/config/prisma"));
 async function main() {
-    const user = await prisma.user.upsert({
+    const user = await prisma_1.default.user.upsert({
         where: { id: 'user1' },
         update: {},
         create: {
@@ -9,16 +13,14 @@ async function main() {
             name: 'Bhone Wai',
         }
     });
-
-    const month = await prisma.month.create({
+    const month = await prisma_1.default.month.create({
         data: {
             userId: user.id,
             month: 6,
             year: 2025,
         }
     });
-
-    await prisma.transaction.createMany({
+    await prisma_1.default.transaction.createMany({
         data: [
             {
                 userId: user.id,
@@ -40,10 +42,8 @@ async function main() {
             }
         ]
     });
-
-    console.log('Seed completed...')
+    console.log('Seed completed...');
 }
-
 main()
     .catch(console.error)
-    .finally(() => prisma.$disconnect());
+    .finally(() => prisma_1.default.$disconnect());
