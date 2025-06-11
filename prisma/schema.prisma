@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -20,37 +19,14 @@ enum TransactionType {
 }
 
 enum CategoryType {
-  WANTS
   NEEDS
+  WANTS
   SAVINGS
-}
-
-model User {
-  id           String        @id
-  name         String?
-  transactions Transaction[]
-  months       Month[]
-}
-
-model Month {
-  id              String           @id @default(uuid())
-  userId          String
-  month           Int
-  year            Int
-  createdAt       DateTime         @default(now())
-  transactions    Transaction[]
-  monthlyBudget   MonthlyBudget[]
-  categoryBudgets CategoryBudget[]
-
-  user User @relation(fields: [userId], references: [id])
-
-  @@unique([userId, month, year])
 }
 
 model Transaction {
   id        String          @id @default(uuid())
   userId    String
-  monthId   String
   title     String
   amount    Decimal         @db.Decimal(10, 2)
   type      TransactionType
@@ -58,29 +34,21 @@ model Transaction {
   date      DateTime
   createdAt DateTime        @default(now())
 
-  user  User  @relation(fields: [userId], references: [id])
-  month Month @relation(fields: [monthId], references: [id])
-
-  @@index([userId, monthId])
-  @@index([type])
-  @@index([category])
+  @@index([userId, date])
+  @@index([userId, type])
+  @@index([userId, category])
 }
 
-model MonthlyBudget {
-  id          String  @id @default(uuid())
-  monthId     String  @unique
-  totalBudget Decimal @db.Decimal(10, 2)
+model Budget {
+  id           String       @id @default(uuid())
+  userId       String
+  category     CategoryType
+  month        Int
+  year         Int
+  budgetAmount Decimal      @db.Decimal(10, 2)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
-  month Month @relation(fields: [monthId], references: [id])
-}
-
-model CategoryBudget {
-  id       String       @id @default(uuid())
-  monthId  String
-  category CategoryType
-  amount   Decimal      @db.Decimal(10, 2)
-
-  Month Month? @relation(fields: [monthId], references: [id])
-
-  @@unique([monthId, category])
+  @@unique([userId, category, month, year])
+  @@index([userId, month, year])
 }
