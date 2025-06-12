@@ -1,5 +1,5 @@
 import prisma from "../config/prisma";
-import {TransactionType, CategoryType} from "@prisma/client";
+import {TransactionType, IncomeCategory, ExpenseCategory} from "@prisma/client";
 
 export async function getAllTransactions(userId: string) {
     return prisma.transaction.findMany({
@@ -12,7 +12,7 @@ export async function getTransactionsByMonth(userId: string, month: number, year
     const startDate = new Date(year, month - 1, 1);
     const endDate = new Date(year, month, 0, 23, 59, 59);
 
-    return prisma.transaction.findMany({
+    const transactions = await prisma.transaction.findMany({
         where: {
             userId,
             date: {
@@ -22,6 +22,26 @@ export async function getTransactionsByMonth(userId: string, month: number, year
         },
         orderBy: { date: 'desc' },
     });
+
+    const totalIncome = transactions
+        .filter(t => t.type === 'INCOME')
+        .reduce((sum, t) => sum + Number(t.amount), 0);
+
+    const totalExpense = transactions
+        .filter(t => t.type === 'EXPENSE')
+        .reduce((sum, t) => sum + Number(t.amount), 0);
+
+    const netAmount = totalIncome - totalExpense;
+
+    return {
+        transactions,
+        summary: {
+            totalTransactions: transactions.length,
+            totalIncome,
+            totalExpense,
+            netAmount
+        }
+    }
 }
 
 export async function createTransaction(data: {
@@ -29,13 +49,28 @@ export async function createTransaction(data: {
     title: string,
     amount: number,
     type: TransactionType,
-    category: CategoryType,
+    incomeCategory?: IncomeCategory,
+    expenseCategory?: ExpenseCategory,
     date: Date,
 }) {
+    if (data.type === 'INCOME') {
+        if (!data.incomeCategory || data.expenseCategory) {
+            throw new Error('Income transactions must have incomeCategory only');
+        }
+    } else if (data.type === 'EXPENSE') {
+        if (!data.expenseCategory || data.incomeCategory) {
+            throw new Error('Expense transactions must have expenseCategory only');
+        }
+    }
     return prisma.transaction.create({
         data: {
-            ...data,
-            amount: data.amount
+            userId: data.userId,
+            title: data.title,
+            amount: data.amount,
+            type: data.type,
+            incomeCategory: data.incomeCategory,
+            expenseCategory: data.expenseCategory,
+            date: data.date
         }
     });
 }

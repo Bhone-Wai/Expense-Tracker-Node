@@ -18,36 +18,43 @@ enum TransactionType {
   EXPENSE
 }
 
-enum CategoryType {
+enum IncomeCategory {
+  SALARY
+  FREELANCE
+  BONUS
+  INVESTMENT
+}
+
+enum ExpenseCategory {
   NEEDS
   WANTS
   SAVINGS
 }
 
 model Transaction {
-  id        String          @id @default(uuid())
-  userId    String
-  title     String
-  amount    Decimal         @db.Decimal(10, 2)
-  type      TransactionType
-  category  CategoryType
-  date      DateTime
-  createdAt DateTime        @default(now())
+  id              String           @id @default(uuid())
+  userId          String
+  title           String
+  amount          Decimal          @db.Decimal(10, 2)
+  type            TransactionType
+  incomeCategory  IncomeCategory?
+  expenseCategory ExpenseCategory?
+  date            DateTime
+  createdAt       DateTime         @default(now())
 
   @@index([userId, date])
   @@index([userId, type])
-  @@index([userId, category])
 }
 
 model Budget {
-  id           String       @id @default(uuid())
+  id           String          @id @default(uuid())
   userId       String
-  category     CategoryType
+  category     ExpenseCategory
   month        Int
   year         Int
-  budgetAmount Decimal      @db.Decimal(10, 2)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  budgetAmount Decimal         @db.Decimal(10, 2)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
 
   @@unique([userId, category, month, year])
   @@index([userId, month, year])

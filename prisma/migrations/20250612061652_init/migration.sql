@@ -2,7 +2,10 @@
 CREATE TYPE "TransactionType" AS ENUM ('INCOME', 'EXPENSE');
 
 -- CreateEnum
-CREATE TYPE "CategoryType" AS ENUM ('NEEDS', 'WANTS', 'SAVINGS');
+CREATE TYPE "IncomeCategory" AS ENUM ('SALARY', 'FREELANCE', 'BONUS', 'INVESTMENT');
+
+-- CreateEnum
+CREATE TYPE "ExpenseCategory" AS ENUM ('NEEDS', 'WANTS', 'SAVINGS');
 
 -- CreateTable
 CREATE TABLE "Transaction" (
@@ -11,7 +14,8 @@ CREATE TABLE "Transaction" (
     "title" TEXT NOT NULL,
     "amount" DECIMAL(10,2) NOT NULL,
     "type" "TransactionType" NOT NULL,
-    "category" "CategoryType" NOT NULL,
+    "incomeCategory" "IncomeCategory",
+    "expenseCategory" "ExpenseCategory",
     "date" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -22,7 +26,7 @@ CREATE TABLE "Transaction" (
 CREATE TABLE "Budget" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
-    "category" "CategoryType" NOT NULL,
+    "category" "ExpenseCategory" NOT NULL,
     "month" INTEGER NOT NULL,
     "year" INTEGER NOT NULL,
     "budgetAmount" DECIMAL(10,2) NOT NULL,
@@ -37,9 +41,6 @@ CREATE INDEX "Transaction_userId_date_idx" ON "Transaction"("userId", "date");
 
 -- CreateIndex
 CREATE INDEX "Transaction_userId_type_idx" ON "Transaction"("userId", "type");
-
--- CreateIndex
-CREATE INDEX "Transaction_userId_category_idx" ON "Transaction"("userId", "category");
 
 -- CreateIndex
 CREATE INDEX "Budget_userId_month_year_idx" ON "Budget"("userId", "month", "year");

@@ -1,5 +1,5 @@
 import prisma from "../config/prisma";
-import {CategoryType} from "@prisma/client";
+import {ExpenseCategory} from "@prisma/client";
 
 export async function getBudgetForMonth(userId: string, month: number, year: number) {
     return prisma.budget.findMany({
@@ -28,11 +28,12 @@ export async function getTotalMonthBudget(userId: string, month: number, year: n
 
 export async function setBudgetForCategory(
     userId: string,
-    category: CategoryType,
+    category: ExpenseCategory,
     month: number,
     year: number,
     amount: number
 ) {
+
     return prisma.budget.upsert({
         where: {
             userId_category_month_year: {
@@ -53,5 +54,37 @@ export async function setBudgetForCategory(
             year,
             budgetAmount: amount,
         }
-    })
+    });
+}
+
+export async function getBudgetVsActual(userId: string, month: number, year: number) {
+    const budgets = await getBudgetForMonth(userId, month, year);
+
+    const startDate = new Date(year, month -1, 1);
+    const endDate = new Date(year, month, 0, 23, 23, 59);
+
+    const expenses = await prisma.transaction.findMany({
+        where: {
+            userId,
+            type: 'EXPENSE',
+            date: {
+                gte: startDate,
+                lte: endDate,
+            }
+        }
+    });
+
+    const actualSpending = expenses.reduce((acc, expense) => {
+        const category = expense.expenseCategory!;
+        acc[category] = (acc[category] || 0) + Number(expense.amount);
+        return acc;
+    }, {} as Record<ExpenseCategory, number>);
+
+    return budgets.map(budget => ({
+        category: budget.category,
+        budgeted: Number(budget.budgetAmount),
+        actual: actualSpending[budget.category] || 0,
+        remaining: Number(budget.budgetAmount) - (actualSpending[budget.category] || 0),
+        percentUsed: ((actualSpending[budget.category] || 0) / Number(budget.budgetAmount)) * 100
+    }));
 }
