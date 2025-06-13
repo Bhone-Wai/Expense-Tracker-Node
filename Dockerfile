@@ -19,8 +19,12 @@ COPY . .
 # Build the TypeScript code
 RUN npm run build
 
+# Copy the entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 # Expose the port
 EXPOSE 3000
 
 # Start the server
-CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
+CMD ["/entrypoint.sh"]
