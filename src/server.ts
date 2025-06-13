@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import router from "./routes";
 import {clerkMiddleware} from "@clerk/express";
+import {env} from "./config/env";
 
 dotenv.config();
 
@@ -15,7 +16,7 @@ app.use(clerkMiddleware({
 
 app.use('/api/v1', router);
 
-const PORT = process.env.PORT || 3000;
+const PORT = env.PORT;
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
