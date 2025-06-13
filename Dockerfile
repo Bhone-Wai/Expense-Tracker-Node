@@ -22,8 +22,5 @@ RUN npm run build
 # Expose the port
 EXPOSE 3000
 
-# Generate Prisma client (required if using Prisma)
-RUN npx prisma generate
-
 # Start the server
 CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
