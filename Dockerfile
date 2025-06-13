@@ -23,4 +23,4 @@ RUN npm run build
 EXPOSE 3000
 
 # Start the server
-CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
+CMD ["sh", "-c", "echo 'DATABASE_URL is set:' && echo ${DATABASE_URL:0:20}... && echo 'Running migrations...' && npx prisma migrate deploy && echo 'Starting application...' && npm start"]
