@@ -20,7 +20,3 @@ const PORT = env.PORT;
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
-
-app.get('/health', (req, res) => {
-    res.status(200).json({ status: 'OK' });
-});
