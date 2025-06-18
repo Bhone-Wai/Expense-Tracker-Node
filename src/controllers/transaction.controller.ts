@@ -12,7 +12,8 @@ const successResponse = (res: Response, message: string, data: any, status = 200
 export async function getAllTransactions(req: Request, res: Response, next: NextFunction) {
     try {
         const userId = req.validatedData;
-        const transactions = await transactionService.getAllTransactions(userId);
+        const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
+        const transactions = await transactionService.getAllTransactions(userId, limit);
 
         return successResponse(res, 'Transactions fetched successfully', transactions);
     } catch (e) {
