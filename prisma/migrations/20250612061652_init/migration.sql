@@ -18,7 +18,6 @@ CREATE TABLE "Transaction" (
     "expenseCategory" "ExpenseCategory",
     "date" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
     CONSTRAINT "Transaction_pkey" PRIMARY KEY ("id")
 );
 
