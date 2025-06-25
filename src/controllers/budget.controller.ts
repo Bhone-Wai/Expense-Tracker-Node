@@ -15,6 +15,7 @@ export async function getBudgetForMonth(req: Request, res: Response, next: NextF
         const { userId, month, year } = req.validatedData;
 
         const budgets = await budgetService.getBudgetForMonth(userId, month, year);
+        
         const totalBudget = await budgetService.getTotalMonthBudget(userId, month, year);
 
         const responseData = {
@@ -48,20 +49,33 @@ export async function getTotalMonthBudget(req: Request, res: Response, next: Nex
     }
 }
 
-export async function setBudgetForCategory(req: Request, res: Response, next: NextFunction) {
+export async function setMonthlyBudgets(req: Request, res: Response, next: NextFunction) {
     try {
-        const { userId, month, year } = req.validatedData;
-        const { category, amount } = req.body;
+        const userId = req.auth?.userId;
+        const { month, year } = req.validatedData;
+        const { budgets } = req.body;
 
-        const budget = await budgetService.setBudgetForCategory(
-            userId,
-            category as ExpenseCategory,
-            month,
-            year,
-            amount,
+        if (!userId) {
+            return res.status(401).json({ success: false, message: 'Unauthorized' });
+        }
+
+        if (!Array.isArray(budgets)) {
+            return res.status(400).json({ success: false, message: 'Budgets must be an array' });
+        }
+
+        const results = await Promise.all(
+            budgets.map(({ category, amount }) =>
+                budgetService.setBudgetForCategory(
+                    userId,
+                    category,
+                    month,
+                    year,
+                    amount
+                )
+            )
         );
 
-        return successResponse(res, 'Budget set successfully', budget, 201);
+        return successResponse(res, 'Budgets set successfully', results, 201);
     } catch (e) {
         next(e);
     }
@@ -71,7 +85,11 @@ export async function getBudgetVsActual(req: Request, res: Response, next: NextF
     try {
         const { userId, month, year } = req.validatedData;
 
+        const CATEGORY_ORDER = ["NEEDS", "WANTS", "SAVINGS"];
+
         const budgetVsActual = await budgetService.getBudgetVsActual(userId, month, year);
+
+        budgetVsActual.sort((a, b) => CATEGORY_ORDER.indexOf(a.category) - CATEGORY_ORDER.indexOf(b.category));
 
         return successResponse(res, `Budget vs actual for ${month}/${year} fetched successfully`, budgetVsActual);
     } catch (e) {

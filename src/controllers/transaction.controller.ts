@@ -39,7 +39,11 @@ export async function getTransactionsByMonth(req: Request, res: Response, next: 
 
 export async function createTransaction(req: Request, res: Response, next: NextFunction) {
     try {
-        const { userId } = req.validatedData;
+        const userId = req.auth?.userId;
+
+        if (!userId) {
+            return res.status(401).json({ success: false, message: 'Unauthorized' });
+        }
 
         const { title, amount, type, incomeCategory, expenseCategory, date } = req.body;
 
