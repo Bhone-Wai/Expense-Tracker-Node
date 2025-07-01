@@ -3,12 +3,7 @@ import cors from 'cors';
 import router from "./routes";
 import {clerkMiddleware} from "@clerk/express";
 import {env} from "./config/env";
-<<<<<<< HEAD:src/server.ts
-
-dotenv.config();
-=======
 import cookieParser from "cookie-parser";
->>>>>>> dev:src/index.ts
 
 const app = express();
 
@@ -32,11 +27,6 @@ app.use(clerkMiddleware({
 
 app.use('/api/v1', router);
 
-<<<<<<< HEAD:src/server.ts
-const PORT = env.PORT;
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-=======
 const PORT = env.PORT || 3000;
 
 const server = app.listen(PORT, () => {
@@ -60,5 +50,4 @@ process.on('SIGINT', () => {
         console.log('Process terminated');
         process.exit(0);
     });
->>>>>>> dev:src/index.ts
 });

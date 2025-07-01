@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:20-slim
 
 # Set working directory
 WORKDIR /app
@@ -6,14 +6,26 @@ WORKDIR /app
 # Copy only package files first for faster cache
 COPY package*.json ./
 
-# Install dependencies (use ci for production)
-RUN npm ci --only=production
+## Install dependencies (use ci for production)
+#RUN npm ci --only=production
 
-# Copy the rest of the code
+# Copy package files
+COPY package.json package-lock.json ./
+
+# Install dependencies
+RUN npm ci
+
+
+# Copy entire prisma folder
+COPY prisma/ ./prisma/
+
+# Copy rest of the app
 COPY . .
 
-# Build the TypeScript code
-RUN npm run build
+# Copy the entrypoint script
+COPY entrypoint.sh /app/entrypoint.sh
+
+RUN chmod +x /app/entrypoint.sh
 
 # Generate Prisma Client
 RUN npx prisma generate
@@ -21,8 +33,6 @@ RUN npx prisma generate
 # Expose the port
 EXPOSE 3000
 
-# Generate Prisma client (required if using Prisma)
-RUN npx prisma generate
+ENTRYPOINT ["/app/entrypoint.sh"]
 
-# Start the server
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]

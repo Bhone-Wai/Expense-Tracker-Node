@@ -4,9 +4,13 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const envSchema = z.object({
-    PORT: z.string().optional(),
+    PORT: z.string().transform(Number).pipe(z.number().min(1).max(65535)).optional(),
     DATABASE_URL: z.string().url(),
-    // NODE_ENV: z.enum(['development', 'production', 'test']).default('development');
+    CLIENT_URL: z.string().url().optional(),
+    CLERK_PUBLISHABLE_KEY: z.string().min(1),
+    CLERK_SECRET_KEY: z.string().min(1),
+    COOKIE_SECRET: z.string().min(32).optional(),
+    NODE_ENV: z.enum(['development', 'production', 'test']).default('development')
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -16,4 +20,5 @@ if (!parsed.success) {
     process.exit(1);
 }
 
+console.log('Environment variables validated successfully...');
 export const env = parsed.data;

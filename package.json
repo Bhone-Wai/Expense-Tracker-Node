@@ -1,18 +1,9 @@
 {
-  "name": "expense-tracker-nodejs",
-  "version": "1.0.0",
-  "description": "Backend API for expense tracking application",
-  "main": "dist/server.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
-    "start:migrate": "npx prisma migrate deploy && npm start",
-    "postinstall": "prisma generate"
+    "start": "node dist/index.js"
   },
-  "keywords": ["expense-tracker", "api", "nodejs", "typescript"],
-  "author": "Bhone Wai",
-  "license": "MIT",
   "devDependencies": {
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
