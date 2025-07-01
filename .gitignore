@@ -191,4 +191,7 @@ $RECYCLE.BIN/
 # JetBrains IDEs
 .idea
 
+# Cursor
+.cursor
+
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,node,windows

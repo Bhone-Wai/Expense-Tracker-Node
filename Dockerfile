@@ -5,13 +5,9 @@ WORKDIR /app
 
 # Copy only package files first for faster cache
 COPY package*.json ./
-COPY prisma ./prisma/
 
 # Install dependencies (use ci for production)
-RUN npm ci
-
-# Generate Prisma Client
-RUN npx prisma generate
+RUN npm ci --only=production
 
 # Copy the rest of the code
 COPY . .
@@ -19,8 +15,14 @@ COPY . .
 # Build the TypeScript code
 RUN npm run build
 
+# Generate Prisma Client
+RUN npx prisma generate
+
 # Expose the port
 EXPOSE 3000
+
+# Generate Prisma client (required if using Prisma)
+RUN npx prisma generate
 
 # Start the server
 CMD ["npm", "start"]

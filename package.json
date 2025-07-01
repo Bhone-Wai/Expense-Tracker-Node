@@ -14,6 +14,8 @@
   "author": "Bhone Wai",
   "license": "MIT",
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/node": "^22.15.30",
     "prisma": "^6.9.0",
@@ -25,6 +27,8 @@
     "@clerk/clerk-sdk-node": "^4.13.23",
     "@clerk/express": "^1.6.0",
     "@prisma/client": "^6.9.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "svix": "^1.67.0",

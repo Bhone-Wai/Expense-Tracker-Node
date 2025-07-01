@@ -1,9 +1,19 @@
 import prisma from "../config/prisma";
 import {TransactionType, IncomeCategory, ExpenseCategory} from "@prisma/client";
 
-export async function getAllTransactions(userId: string) {
+export async function getAllTransactions(userId: string, limit?: number) {
+    const where = { userId };
+
+    if (limit) {
+        return prisma.transaction.findMany({
+            where,
+            orderBy: { date: 'desc' },
+            take: limit
+        });
+    }
+
     return prisma.transaction.findMany({
-        where: { userId },
+        where,
         orderBy: { date: 'desc' },
     });
 }
