@@ -26,12 +26,14 @@ services:
       - /app/node_modules
     ports:
       - "3000:3000"
+      - "5555:5555"
     depends_on:
       postgres:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/mydb
-    command: ["npm", "run", "dev"]
+    stdin_open: true
+    tty: true
 
 volumes:
   pgdata:
