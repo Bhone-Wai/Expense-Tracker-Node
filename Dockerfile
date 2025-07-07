@@ -6,33 +6,26 @@ WORKDIR /app
 # Copy only package files first for faster cache
 COPY package*.json ./
 
-## Install dependencies (use ci for production)
-#RUN npm ci --only=production
-
-# Copy package files
-COPY package.json package-lock.json ./
-
-# Install dependencies
-RUN npm ci
-
-
-# Copy entire prisma folder
-COPY prisma/ ./prisma/
+# Install dependencies (production only)
+RUN npm ci --only=production
 
 # Copy rest of the app
 COPY . .
 
-# Copy the entrypoint script
-COPY entrypoint.sh /app/entrypoint.sh
+# Install dev dependencies for build
+RUN npm install --save-dev typescript ts-node @types/node
 
-RUN chmod +x /app/entrypoint.sh
+# Build the TypeScript code
+RUN npm run build
 
 # Generate Prisma Client
 RUN npx prisma generate
 
+# Remove dev dependencies to keep image lean
+RUN npm ci --only=production
+
 # Expose the port
 EXPOSE 3000
 
-ENTRYPOINT ["/app/entrypoint.sh"]
-
-CMD ["npm", "run", "dev"]
+# Start the application
+CMD ["npm", "start"]

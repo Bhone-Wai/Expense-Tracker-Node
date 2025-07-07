@@ -1,3 +1,49 @@
-node_modules
-.git
+# Dependencies
+node_modules/
+npm-debug.log*
+
+# Build output
+dist/
+build/
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.production
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Temporary folders
+tmp/
+temp/
