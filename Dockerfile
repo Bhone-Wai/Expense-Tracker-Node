@@ -3,23 +3,23 @@ FROM node:20-slim
 # Set working directory
 WORKDIR /app
 
-# Copy only package files first for faster cache
+# Copy package files first for better caching
 COPY package*.json ./
 
-# Install dependencies (production only)
-RUN npm ci --only=production
+# Install ALL dependencies (including dev dependencies)
+RUN npm ci
 
 # Copy rest of the app
 COPY . .
 
-# Install dev dependencies for build
-RUN npm install --save-dev typescript ts-node @types/node
-
-# Build the TypeScript code
-RUN npm run build
-
 # Generate Prisma Client
 RUN npx prisma generate
+
+# Debug: List files to make sure everything is copied
+RUN ls -la src/
+
+# Build the TypeScript code with verbose output
+RUN npm run build --verbose
 
 # Remove dev dependencies to keep image lean
 RUN npm ci --only=production
