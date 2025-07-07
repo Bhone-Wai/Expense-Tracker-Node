@@ -42,7 +42,8 @@ export async function createTransaction(req: Request, res: Response, next: NextF
         const userId = req.auth?.userId;
 
         if (!userId) {
-            return res.status(401).json({ success: false, message: 'Unauthorized' });
+            res.status(401).json({ success: false, message: 'Unauthorized' });
+            return;
         }
 
         const { title, amount, type, incomeCategory, expenseCategory, date } = req.body;
@@ -58,7 +59,7 @@ export async function createTransaction(req: Request, res: Response, next: NextF
             date: new Date(date),
         });
 
-        return successResponse(res, 'Transaction created successfully', transaction, 201)
+        successResponse(res, 'Transaction created successfully', transaction, 201);
     } catch (e) {
         next(e)
     }

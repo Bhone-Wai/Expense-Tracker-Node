@@ -56,11 +56,13 @@ export async function setMonthlyBudgets(req: Request, res: Response, next: NextF
         const { budgets } = req.body;
 
         if (!userId) {
-            return res.status(401).json({ success: false, message: 'Unauthorized' });
+            res.status(401).json({ success: false, message: 'Unauthorized' });
+            return;
         }
 
         if (!Array.isArray(budgets)) {
-            return res.status(400).json({ success: false, message: 'Budgets must be an array' });
+            res.status(400).json({ success: false, message: 'Budgets must be an array' });
+            return;
         }
 
         const results = await Promise.all(
@@ -75,7 +77,7 @@ export async function setMonthlyBudgets(req: Request, res: Response, next: NextF
             )
         );
 
-        return successResponse(res, 'Budgets set successfully', results, 201);
+        successResponse(res, 'Budgets set successfully', results, 201);
     } catch (e) {
         next(e);
     }
