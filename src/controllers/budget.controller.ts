@@ -12,10 +12,17 @@ const successResponse = (res: Response, message: string, data: any, status = 200
 
 export async function getBudgetForMonth(req: Request, res: Response, next: NextFunction) {
     try {
-        const { userId, month, year } = req.validatedData;
+        const userId = req.auth?.userId;
+
+        if (!userId) {
+            res.status(401).json({ success: false, message: 'Unauthorized' });
+            return;
+        }
+
+        const { month, year } = req.validatedData; // month and year are still from validatedData
 
         const budgets = await budgetService.getBudgetForMonth(userId, month, year);
-        
+
         const totalBudget = await budgetService.getTotalMonthBudget(userId, month, year);
 
         const responseData = {
@@ -33,7 +40,14 @@ export async function getBudgetForMonth(req: Request, res: Response, next: NextF
 
 export async function getTotalMonthBudget(req: Request, res: Response, next: NextFunction) {
     try {
-        const { userId, month, year } = req.validatedData;
+        const userId = req.auth?.userId;
+
+        if (!userId) {
+            res.status(401).json({ success: false, message: 'Unauthorized' });
+            return;
+        }
+
+        const { month, year } = req.validatedData; // month and year are still from validatedData
 
         const totalBudget = await budgetService.getTotalMonthBudget(userId, month, year);
 
@@ -85,7 +99,14 @@ export async function setMonthlyBudgets(req: Request, res: Response, next: NextF
 
 export async function getBudgetVsActual(req: Request, res: Response, next: NextFunction) {
     try {
-        const { userId, month, year } = req.validatedData;
+        const userId = req.auth?.userId;
+
+        if (!userId) {
+            res.status(401).json({ success: false, message: 'Unauthorized' });
+            return;
+        }
+
+        const { month, year } = req.validatedData; // month and year are still from validatedData
 
         const CATEGORY_ORDER = ["NEEDS", "WANTS", "SAVINGS"];
 
