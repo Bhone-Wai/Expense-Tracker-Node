@@ -11,7 +11,13 @@ const successResponse = (res: Response, message: string, data: any, status = 200
 
 export async function getAllTransactions(req: Request, res: Response, next: NextFunction) {
     try {
-        const userId = req.validatedData;
+        const userId = req.auth?.userId;
+
+        if (!userId) {
+            res.status(401).json({ success: false, message: 'Unauthorized' });
+            return;
+        }
+
         const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
         const transactions = await transactionService.getAllTransactions(userId, limit);
 
@@ -23,7 +29,14 @@ export async function getAllTransactions(req: Request, res: Response, next: Next
 
 export async function getTransactionsByMonth(req: Request, res: Response, next: NextFunction) {
     try {
-        const { userId, month, year } = req.validatedData;
+        const userId = req.auth?.userId;
+
+        if (!userId) {
+            res.status(401).json({ success: false, message: 'Unauthorized' });
+            return;
+        }
+
+        const { month, year } = req.validatedData; // month and year are still from validatedData
 
         const transactions = await transactionService.getTransactionsByMonth(
             userId,
@@ -42,7 +55,8 @@ export async function createTransaction(req: Request, res: Response, next: NextF
         const userId = req.auth?.userId;
 
         if (!userId) {
-            return res.status(401).json({ success: false, message: 'Unauthorized' });
+            res.status(401).json({ success: false, message: 'Unauthorized' });
+            return;
         }
 
         const { title, amount, type, incomeCategory, expenseCategory, date } = req.body;
@@ -58,7 +72,7 @@ export async function createTransaction(req: Request, res: Response, next: NextF
             date: new Date(date),
         });
 
-        return successResponse(res, 'Transaction created successfully', transaction, 201)
+        successResponse(res, 'Transaction created successfully', transaction, 201)
     } catch (e) {
         next(e)
     }
@@ -66,7 +80,12 @@ export async function createTransaction(req: Request, res: Response, next: NextF
 
 export async function deleteTransaction(req: Request, res: Response, next: NextFunction) {
     try {
-        const userId = req.validatedData;
+        const userId = req.auth?.userId;
+
+        if (!userId) {
+            res.status(401).json({ success: false, message: 'Unauthorized' });
+            return;
+        }
 
         const { id } = req.params;
 

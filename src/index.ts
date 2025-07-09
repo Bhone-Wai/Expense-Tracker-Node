@@ -27,6 +27,12 @@ app.use(clerkMiddleware({
 
 app.use('/api/v1', router);
 
+// Error handling middleware (add this if not already present)
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error(err.stack);
+    res.status(err.status || 500).send(err.message || 'Something broke!');
+});
+
 const PORT = env.PORT || 3000;
 
 const server = app.listen(PORT, () => {
