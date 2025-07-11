@@ -3,6 +3,9 @@ FROM node:20-slim
 # Set working directory
 WORKDIR /app
 
+#f Install OpenSSL for Prisma
+RUN apt-get update -y && apt-get install -y openssl
+
 # Copy only package files first for faster cache
 COPY package*.json ./
 
@@ -14,6 +17,7 @@ COPY package.json package-lock.json ./
 
 # Install dependencies
 RUN npm ci
+
 
 
 # Copy entire prisma folder
