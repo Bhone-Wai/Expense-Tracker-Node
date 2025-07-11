@@ -32,7 +32,6 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/mydb
-    command: ["npm", "run", "dev"]
 
 volumes:
   pgdata:
